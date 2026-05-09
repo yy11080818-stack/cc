@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>阡陌通 - AI大脑 v1.0</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
+    body {
+      font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
+      color: #eaf2ff;
+      background:
+        radial-gradient(circle at 15% 10%, rgba(47, 84, 235, .28), transparent 30%),
+        radial-gradient(circle at 88% 14%, rgba(0, 180, 216, .18), transparent 28%),
+        linear-gradient(135deg, #081426 0%, #101a35 54%, #06111f 100%);
+    }
+    .screen { width: 100vw; height: 100vh; overflow: hidden; }
+    .topbar {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 34px;
+      border-bottom: 1px solid rgba(95, 139, 255, .24);
+      background: rgba(7, 16, 32, .82);
+      backdrop-filter: blur(14px);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0;
+      color: #ffffff;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 10px;
+      color: #9fc4ff;
+      background: linear-gradient(145deg, rgba(47, 84, 235, .32), rgba(0, 180, 216, .16));
+      border: 1px solid rgba(120, 167, 255, .36);
+      box-shadow: 0 0 22px rgba(47, 84, 235, .2);
+    }
+    .top-meta { display: flex; align-items: center; gap: 24px; color: #a8b9d8; font-size: 14px; }
+    .meta-pill {
+      padding: 8px 12px;
+      border: 1px solid rgba(123, 158, 232, .2);
+      border-radius: 8px;
+      background: rgba(18, 35, 66, .48);
+      color: #c7d6f3;
+    }
+    .page { display: none; height: calc(100vh - 72px); }
+    .page.active { display: block; }
+    .home {
+      padding: 22px 34px 28px;
+      display: grid;
+      grid-template-rows: 150px 1fr 178px;
+      gap: 18px;
+    }
+    .panel {
+      border: 1px solid rgba(103, 143, 233, .22);
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(13, 31, 58, .78), rgba(7, 21, 41, .56));
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .04);
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr 770px;
+      gap: 24px;
+      padding: 22px 28px;
+      align-items: center;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      right: 340px;
+      top: -120px;
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(67, 132, 255, .18), transparent 65%);
+      pointer-events: none;
+    }
+    .hero-copy { min-width: 0; padding-bottom: 2px; }
+    .hero h2 { font-size: 25px; line-height: 1.15; margin: 0 0 14px; color: #74a7ff; font-weight: 800; }
+    .hero p { max-width: 880px; margin: 0; font-size: 15px; line-height: 1.6; color: #b7c8e8; }
+    .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; align-self: center; }
+    .metric {
+      padding: 16px 18px;
+      border-radius: 12px;
+      background: rgba(18, 41, 75, .64);
+      border: 1px solid rgba(112, 153, 255, .2);
+    }
+    .metric .label { font-size: 13px; color: #8fa5cc; margin-bottom: 8px; }
+    .metric .value { font-size: 27px; font-weight: 800; color: #f6fbff; }
+    .agent-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; min-height: 0; }
+    .agent-card {
+      position: relative;
+      overflow: hidden;
+      min-height: 100%;
+      padding: 24px 22px;
+      display: flex;
+      flex-direction: column;
+      cursor: pointer;
+      transition: transform .22s ease, border-color .22s ease, box-shadow .22s ease;
+    }
+    .agent-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(106, 165, 255, .75);
+      box-shadow: 0 20px 48px rgba(27, 93, 231, .24);
+    }
+    .agent-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(47, 84, 235, .16), transparent 42%);
+      pointer-events: none;
+    }
+    .agent-top { position: relative; display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .agent-icon {
+      width: 52px;
+      height: 52px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: rgba(71, 121, 255, .16);
+      border: 1px solid rgba(130, 170, 255, .28);
+      color: #9ec4ff;
+      font-size: 24px;
+    }
+    .agent-card h3 { position: relative; margin: 0 0 10px; font-size: 24px; font-weight: 800; }
+    .agent-card .desc { position: relative; min-height: 54px; margin: 0 0 18px; color: #b8c8e5; line-height: 1.6; font-size: 14px; }
+    .tag-row { position: relative; display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+    .tag {
+      padding: 6px 9px;
+      font-size: 12px;
+      color: #cfe0ff;
+      border-radius: 999px;
+      border: 1px solid rgba(121, 163, 255, .24);
+      background: rgba(41, 79, 146, .28);
+      white-space: nowrap;
+    }
+    .mini-stats { position: relative; display: grid; gap: 9px; margin-top: 4px; }
+    .mini-stat { display: flex; justify-content: space-between; color: #dfeaff; font-size: 14px; }
+    .mini-stat span:first-child { color: #91a8ce; }
+    .agent-actions {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: auto;
+      padding-top: 16px;
+    }
+    .enter-btn {
+      height: 36px;
+      padding: 0 16px;
+      border: 0;
+      border-radius: 8px;
+      color: #fff;
+      cursor: pointer;
+      background: linear-gradient(135deg, #2f54eb, #1f9fd0);
+      box-shadow: 0 10px 22px rgba(47, 84, 235, .22);
+    }
+    .bottom-overview { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .overview-card { padding: 18px 20px; }
+    .section-title { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 17px; font-weight: 700; }
+    .section-title i { color: #7fb4ff; }
+    .overview-list { display: grid; gap: 9px; color: #bcd0ef; font-size: 14px; }
+    .overview-list li { display: flex; justify-content: space-between; gap: 12px; list-style: none; }
+    .overview-list strong { color: #ffffff; font-weight: 700; }
+
+    .sub-layout {
+      height: calc(100vh - 72px);
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr) 410px;
+      gap: 18px;
+      padding: 22px 34px 28px;
+      min-height: 0;
+    }
+    .sidebar { padding: 16px 12px; }
+    .sidebar-title { padding: 8px 12px 12px; color: #8299c2; font-size: 13px; font-weight: 700; }
+    .side-item {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 9px;
+      padding: 14px 12px;
+      border: 1px solid transparent;
+      border-radius: 10px;
+      color: #b8c8e8;
+      background: transparent;
+      text-align: left;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .side-item:hover, .side-item.active {
+      color: #fff;
+      border-color: rgba(107, 155, 255, .45);
+      background: rgba(47, 84, 235, .16);
+    }
+    .side-item i { width: 22px; color: #85b8ff; text-align: center; font-size: 18px; }
+    .main-content, .right-panel { min-height: 0; overflow: hidden; }
+    .main-content { padding: 22px; display: grid; grid-template-rows: auto 1fr 120px; gap: 16px; }
+    .sub-head {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: start;
+      gap: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(123, 158, 232, .14);
+    }
+    .sub-head h2 { margin: 0 0 8px; font-size: 28px; font-weight: 800; }
+    .sub-head p { margin: 0; color: #adc0df; line-height: 1.65; font-size: 14px; max-width: 900px; }
+    .sub-badge {
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(103, 181, 255, .28);
+      color: #bcd9ff;
+      background: rgba(18, 50, 88, .46);
+      white-space: nowrap;
+      font-size: 13px;
+    }
+    .apps-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; min-height: 0; }
+    .apps-grid.compact { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .apps-grid.strip { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+    .app-card {
+      position: relative;
+      padding: 18px;
+      border-radius: 12px;
+      border: 1px solid rgba(110, 153, 244, .2);
+      background: rgba(12, 29, 55, .68);
+      min-height: 0;
+      overflow: hidden;
+    }
+    .app-card h3 { margin: 0 0 9px; font-size: 18px; font-weight: 800; }
+    .app-card p { margin: 0 0 12px; min-height: 45px; color: #adbfdd; font-size: 13px; line-height: 1.55; }
+    .app-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 11px; }
+    .app-tag { font-size: 11px; padding: 5px 7px; border-radius: 999px; color: #cfe0ff; background: rgba(47, 84, 235, .18); border: 1px solid rgba(106, 150, 255, .2); }
+    .output { color: #8fa6ce; font-size: 12px; line-height: 1.5; padding-right: 96px; }
+    .open-app {
+      position: absolute;
+      right: 14px;
+      bottom: 14px;
+      height: 32px;
+      padding: 0 12px;
+      border: 1px solid rgba(112, 170, 255, .28);
+      border-radius: 8px;
+      color: #d9ebff;
+      background: rgba(47, 84, 235, .2);
+      cursor: pointer;
+    }
+    .app-card.compact { padding: 13px; }
+    .app-card.compact h3 { font-size: 15px; margin-bottom: 6px; }
+    .app-card.compact p { min-height: 34px; margin-bottom: 8px; font-size: 12px; line-height: 1.45; }
+    .app-card.compact .app-tags { margin-bottom: 8px; }
+    .app-card.compact .app-tag { font-size: 10px; padding: 4px 6px; }
+    .app-card.compact .output { display: none; }
+    .app-card.compact .open-app { height: 28px; right: 10px; bottom: 10px; font-size: 12px; }
+    .field-page { grid-template-rows: auto 1fr 86px; }
+    .field-board {
+      min-height: 0;
+      overflow: hidden;
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+      background: rgba(8, 24, 48, .62);
+      border: 1px solid rgba(110, 153, 244, .18);
+      border-radius: 14px;
+    }
+    .field-board.video-first { grid-template-rows: 38px minmax(0, 1fr) 158px; }
+    .field-board.balanced { grid-template-rows: 38px minmax(0, 1fr); }
+    .field-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .field-toolbar-title { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 800; }
+    .demo-switch, .view-switch {
+      display: flex;
+      padding: 3px;
+      border-radius: 10px;
+      background: rgba(17, 38, 72, .78);
+      border: 1px solid rgba(110, 153, 244, .2);
+    }
+    .demo-switch button, .view-switch button {
+      height: 30px;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 8px;
+      color: #9fb4d5;
+      background: transparent;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .demo-switch button.active, .view-switch button.active { color: #fff; background: linear-gradient(135deg, #2f54eb, #178fc2); }
+    .view-actions { display: flex; align-items: center; gap: 10px; }
+    .icon-btn {
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(112, 170, 255, .28);
+      border-radius: 10px;
+      color: #dbeaff;
+      background: rgba(47, 84, 235, .2);
+      cursor: pointer;
+    }
+    .video-showcase { min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
+    .balanced-grid { min-height: 0; display: grid; grid-template-columns: 1.08fr .92fr; gap: 12px; }
+    .field-app-zone, .preview-zone {
+      min-height: 0;
+      overflow: hidden;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(9, 25, 49, .74);
+      border: 1px solid rgba(110, 153, 244, .16);
+    }
+    .zone-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .zone-title { font-size: 15px; font-weight: 800; display: flex; gap: 8px; align-items: center; }
+    .zone-sub { color: #8fa6cc; font-size: 12px; }
+    .video-panel {
+      position: relative;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid rgba(117, 165, 255, .24);
+      background:
+        linear-gradient(0deg, rgba(7, 17, 32, .58), rgba(7, 17, 32, .58)),
+        repeating-linear-gradient(90deg, rgba(117,165,255,.08) 0 1px, transparent 1px 80px),
+        repeating-linear-gradient(0deg, rgba(117,165,255,.07) 0 1px, transparent 1px 56px),
+        radial-gradient(circle at 34% 36%, rgba(93, 146, 255, .28), transparent 18%),
+        radial-gradient(circle at 72% 58%, rgba(255, 170, 64, .18), transparent 18%),
+        #071628;
+    }
+    .video-mosaic {
+      min-height: 0;
+      height: 100%;
+      display: grid;
+      gap: 10px;
+    }
+    .video-mosaic.grid-1 { grid-template-columns: 1fr; grid-template-rows: 1fr; }
+    .video-mosaic.grid-2 { grid-template-columns: repeat(2, 1fr); grid-template-rows: 1fr; }
+    .video-mosaic.grid-3 { grid-template-columns: 2fr 1fr; grid-template-rows: repeat(2, 1fr); }
+    .video-mosaic.grid-3 .video-tile:first-child { grid-row: span 2; }
+    .video-mosaic.grid-4 { grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); }
+    .video-mosaic.grid-6 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(2, 1fr); }
+    .video-tile {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      border-radius: 12px;
+      border: 1px solid rgba(117, 165, 255, .24);
+      background:
+        linear-gradient(0deg, rgba(7, 17, 32, .58), rgba(7, 17, 32, .58)),
+        repeating-linear-gradient(90deg, rgba(117,165,255,.08) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(0deg, rgba(117,165,255,.07) 0 1px, transparent 1px 52px),
+        radial-gradient(circle at 34% 36%, rgba(93, 146, 255, .28), transparent 18%),
+        radial-gradient(circle at 72% 58%, rgba(255, 170, 64, .16), transparent 18%),
+        #071628;
+    }
+    .video-tile::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 36%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(82, 195, 255, .85), transparent);
+      box-shadow: 0 0 18px rgba(82, 195, 255, .45);
+      animation: scan 3.2s linear infinite;
+    }
+    .tile-label {
+      position: absolute;
+      left: 10px;
+      top: 9px;
+      z-index: 3;
+      max-width: calc(100% - 20px);
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(5, 14, 28, .72);
+      border: 1px solid rgba(126, 177, 255, .2);
+      font-size: 12px;
+      color: #dbeaff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tile-status {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 9px;
+      z-index: 3;
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 7px 8px;
+      border-radius: 8px;
+      background: rgba(5, 14, 28, .76);
+      border: 1px solid rgba(126, 177, 255, .16);
+      color: #cfe0ff;
+      font-size: 11px;
+    }
+    .tile-detect {
+      position: absolute;
+      z-index: 2;
+      border: 2px solid #ffb84d;
+      box-shadow: 0 0 16px rgba(255, 184, 77, .24);
+      border-radius: 6px;
+    }
+    .tile-detect.warn { border-color: #ff6b6b; box-shadow: 0 0 16px rgba(255, 107, 107, .22); }
+    .tile-detect.safe { border-color: #49d17d; box-shadow: 0 0 16px rgba(73, 209, 125, .2); }
+    .tile-tag {
+      position: absolute;
+      left: -2px;
+      top: -25px;
+      padding: 3px 6px;
+      border-radius: 6px;
+      background: rgba(5, 14, 28, .86);
+      color: #fff;
+      white-space: nowrap;
+      font-size: 10px;
+    }
+    .video-mosaic.grid-6 .tile-tag { display: none; }
+    .video-mosaic.grid-6 .tile-label { font-size: 11px; }
+    .video-mosaic:fullscreen {
+      padding: 18px;
+      background: #06111f;
+    }
+    .video-panel::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 38%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(82, 195, 255, .85), transparent);
+      box-shadow: 0 0 18px rgba(82, 195, 255, .55);
+      animation: scan 3.2s linear infinite;
+    }
+    @keyframes scan { 0% { top: 10%; } 100% { top: 88%; } }
+    .video-label {
+      position: absolute;
+      left: 14px;
+      top: 12px;
+      z-index: 2;
+      padding: 7px 10px;
+      border-radius: 8px;
+      background: rgba(5, 14, 28, .72);
+      border: 1px solid rgba(126, 177, 255, .22);
+      font-size: 12px;
+      color: #dbeaff;
+    }
+    .video-status {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 12px;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 11px;
+      border-radius: 9px;
+      background: rgba(5, 14, 28, .76);
+      border: 1px solid rgba(126, 177, 255, .18);
+      color: #cfe0ff;
+      font-size: 12px;
+    }
+    .detect-box {
+      position: absolute;
+      z-index: 2;
+      border: 2px solid #ffb84d;
+      box-shadow: 0 0 16px rgba(255, 184, 77, .24);
+      border-radius: 6px;
+    }
+    .detect-box.safe { border-color: #49d17d; box-shadow: 0 0 16px rgba(73, 209, 125, .22); }
+    .detect-box.warn { border-color: #ff6b6b; box-shadow: 0 0 16px rgba(255, 107, 107, .22); }
+    .detect-tag {
+      position: absolute;
+      left: -2px;
+      top: -28px;
+      padding: 4px 7px;
+      border-radius: 6px;
+      background: rgba(5, 14, 28, .86);
+      color: #fff;
+      white-space: nowrap;
+      font-size: 11px;
+    }
+    .point-list { display: grid; grid-template-rows: repeat(3, 1fr); gap: 10px; min-height: 0; }
+    .point-card {
+      position: relative;
+      overflow: hidden;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(9, 25, 49, .74);
+      border: 1px solid rgba(110, 153, 244, .16);
+    }
+    .point-card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 78% 24%, rgba(47,84,235,.18), transparent 42%);
+      pointer-events: none;
+    }
+    .point-name { position: relative; font-size: 13px; font-weight: 800; margin-bottom: 6px; }
+    .point-state { position: relative; color: #8fa6cc; font-size: 12px; line-height: 1.5; }
+    .result-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: start;
+      padding: 9px 10px;
+      border-radius: 10px;
+      background: rgba(255, 184, 77, .1);
+      border: 1px solid rgba(255, 184, 77, .18);
+      color: #dfeaff;
+      font-size: 12px;
+      line-height: 1.45;
+      margin-top: 8px;
+    }
+    .level { padding: 3px 6px; border-radius: 6px; background: rgba(255, 184, 77, .22); color: #ffd18a; white-space: nowrap; font-size: 11px; }
+    .level.blue { background: rgba(75, 150, 255, .18); color: #9fc4ff; }
+    .field-app-strip { min-height: 0; }
+    .scenario-box { padding: 16px; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
+    .scenario-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .right-panel { padding: 16px; display: grid; grid-template-rows: auto auto 1fr; gap: 14px; }
+    .right-card { padding: 16px; border-radius: 12px; border: 1px solid rgba(110, 153, 244, .18); background: rgba(10, 26, 50, .58); }
+    .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .kpi { padding: 12px; border-radius: 10px; background: rgba(28, 56, 102, .45); border: 1px solid rgba(110, 153, 244, .14); }
+    .kpi .num { font-size: 20px; color: #fff; font-weight: 800; margin-bottom: 4px; }
+    .kpi .name { color: #8ea5cc; font-size: 12px; }
+    .timeline { display: grid; gap: 11px; font-size: 13px; color: #b8cae8; }
+    .timeline-item { display: grid; grid-template-columns: 44px 1fr; gap: 8px; }
+    .timeline-time { color: #71b2ff; }
+    .result-card { margin-top: 10px; padding: 12px; border-radius: 10px; background: rgba(47, 84, 235, .12); border: 1px solid rgba(106, 150, 255, .16); color: #bdd0ee; font-size: 13px; line-height: 1.6; }
+    .digital-page { grid-template-rows: auto 1fr 150px; }
+    .avatar-stage {
+      display: grid;
+      grid-template-columns: 330px 1fr;
+      gap: 16px;
+      min-height: 0;
+    }
+    .avatar-figure {
+      display: grid;
+      place-items: center;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 50% 28%, rgba(73, 130, 255, .35), transparent 34%),
+        rgba(10, 26, 50, .6);
+      border: 1px solid rgba(110, 153, 244, .2);
+    }
+    .avatar-orb {
+      width: 184px;
+      height: 184px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #cde5ff;
+      font-size: 82px;
+      background: linear-gradient(145deg, rgba(47, 84, 235, .42), rgba(0, 180, 216, .26));
+      border: 1px solid rgba(171, 210, 255, .42);
+      box-shadow: 0 0 42px rgba(47, 84, 235, .32);
+    }
+    .command-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .command {
+      padding: 12px;
+      border-radius: 10px;
+      background: rgba(18, 44, 80, .56);
+      border: 1px solid rgba(110, 153, 244, .18);
+      color: #c7d8f2;
+      font-size: 13px;
+    }
+    .float-avatar {
+      position: fixed;
+      right: 28px;
+      bottom: 24px;
+      z-index: 80;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .float-bubble {
+      max-width: 250px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(117, 164, 255, .24);
+      background: rgba(8, 20, 38, .88);
+      color: #cfe0ff;
+      box-shadow: 0 14px 32px rgba(0, 0, 0, .25);
+      font-size: 13px;
+    }
+    .float-face {
+      width: 58px;
+      height: 58px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      color: #fff;
+      font-size: 28px;
+      background: linear-gradient(145deg, #2f54eb, #17a6c9);
+      box-shadow: 0 16px 34px rgba(47, 84, 235, .34);
+    }
+    .assistant-panel {
+      position: fixed;
+      right: 28px;
+      bottom: 96px;
+      width: 430px;
+      height: 540px;
+      z-index: 90;
+      display: none;
+      padding: 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(128, 176, 255, .28);
+      background: rgba(8, 20, 38, .96);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, .36);
+      backdrop-filter: blur(12px);
+    }
+    .assistant-panel.open { display: grid; grid-template-rows: auto auto 1fr auto; gap: 12px; }
+    .assistant-head { display: flex; align-items: center; justify-content: space-between; }
+    .assistant-title { display: flex; align-items: center; gap: 10px; font-weight: 800; }
+    .close-btn { border: 0; color: #a8b9d8; background: transparent; cursor: pointer; font-size: 18px; }
+    .quick-commands { display: flex; flex-wrap: wrap; gap: 8px; }
+    .quick-command {
+      border: 1px solid rgba(112, 170, 255, .22);
+      border-radius: 999px;
+      color: #cfe0ff;
+      background: rgba(47, 84, 235, .14);
+      padding: 7px 9px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    .chat-area { overflow: hidden; display: grid; gap: 10px; align-content: start; padding: 10px; border-radius: 12px; background: rgba(13, 31, 58, .6); }
+    .message { padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.55; }
+    .bot { background: rgba(47, 84, 235, .16); color: #d9e8ff; }
+    .user { background: rgba(0, 180, 216, .16); color: #ffffff; justify-self: end; }
+    .input-row { display: grid; grid-template-columns: 38px 1fr 48px; gap: 8px; }
+    .voice, .send {
+      border: 0;
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(47, 84, 235, .55);
+      cursor: pointer;
+    }
+    .chat-input {
+      min-width: 0;
+      border: 1px solid rgba(112, 170, 255, .22);
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(16, 32, 59, .78);
+      padding: 0 12px;
+      outline: none;
+    }
+    @media (max-width: 1500px) {
+      .top-meta { gap: 12px; font-size: 12px; }
+      .hero { grid-template-columns: 1fr 620px; }
+      .agent-card h3 { font-size: 20px; }
+      .sub-layout { grid-template-columns: 220px minmax(0, 1fr) 360px; }
+      .apps-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark"><i class="fa fa-sitemap"></i></div>
+        <span>阡陌通 - AI大脑</span>
+      </div>
+      <div class="top-meta">
+        <span class="meta-pill">当前项目：麻城至阳新高速公路北延线</span>
+        <span class="meta-pill">当前范围：全项目</span>
+        <span>2026-05-08 14:30</span>
+        <span><i class="fa fa-user-circle-o"></i> 管理员</span>
+        <span><i class="fa fa-history"></i> 历史记录</span>
+      </div>
+    </header>
+
+    <main id="homePage" class="page active">
+      <section class="home">
+        <div class="panel hero">
+          <div class="hero-copy">
+            <h2>项目全场景智能体调度中心</h2>
+            <p>汇聚知识图谱、现场感知、管理辅助和数字人交互能力，构建覆盖项目建设全过程的AI智能体体系，为工程管理提供知识支撑、现场识别、管理提效和自然语言调度能力。</p>
+          </div>
+          <div class="metric-grid">
+            <div class="metric"><div class="label">智能体集合</div><div class="value">4类</div></div>
+            <div class="metric"><div class="label">接入AI应用</div><div class="value">12项</div></div>
+            <div class="metric"><div class="label">知识资产</div><div class="value">41.6万条</div></div>
+            <div class="metric"><div class="label">今日智能调用</div><div class="value">1,286次</div></div>
+          </div>
+        </div>
+
+        <div class="agent-grid">
+          <article class="panel agent-card" data-page="knowledge">
+            <div class="agent-top"><div class="agent-icon"><i class="fa fa-database"></i></div><span class="sub-badge">知识底座</span></div>
+            <h3>AI知识库 / 知识图谱</h3>
+            <p class="desc">沉淀项目知识资产，构建AI能力可信知识底座，为问答、编制、审核、识别提供依据。</p>
+            <div class="tag-row"><span class="tag">法规标准</span><span class="tag">方案模板</span><span class="tag">历史方案</span><span class="tag">知识图谱</span></div>
+            <div class="mini-stats">
+              <div class="mini-stat"><span>方案模板</span><strong>167</strong></div>
+              <div class="mini-stat"><span>法规标准</span><strong>3,214</strong></div>
+              <div class="mini-stat"><span>方案图片</span><strong>413,202</strong></div>
+            </div>
+            <div class="agent-actions"><button class="enter-btn">进入</button></div>
+          </article>
+
+          <article class="panel agent-card" data-page="field">
+            <div class="agent-top"><div class="agent-icon"><i class="fa fa-video-camera"></i></div><span class="sub-badge">现场感知</span></div>
+            <h3>AI现场智能体</h3>
+            <p class="desc">聚合视频巡检、无人机巡检、隐患识别等能力，实现施工现场风险智能感知。</p>
+            <div class="tag-row"><span class="tag">视频巡检</span><span class="tag">无人机巡检</span><span class="tag">隐患识别</span><span class="tag">整改闭环</span></div>
+            <div class="mini-stats">
+              <div class="mini-stat"><span>视频点位</span><strong>128路</strong></div>
+              <div class="mini-stat"><span>今日识别</span><strong>1,560次</strong></div>
+              <div class="mini-stat"><span>今日隐患</span><strong>23项</strong></div>
+            </div>
+            <div class="agent-actions"><button class="enter-btn">进入</button></div>
+          </article>
+
+          <article class="panel agent-card" data-page="management">
+            <div class="agent-top"><div class="agent-icon"><i class="fa fa-briefcase"></i></div><span class="sub-badge">管理辅助</span></div>
+            <h3>AI管理智能体</h3>
+            <p class="desc">面向项目管理、技术管理和资料审核工作，提供问答、方案编制、审核和分析能力。</p>
+            <div class="tag-row"><span class="tag">知识问答</span><span class="tag">方案编制</span><span class="tag">AI审核</span><span class="tag">管理分析</span></div>
+            <div class="mini-stats">
+              <div class="mini-stat"><span>今日问答</span><strong>326次</strong></div>
+              <div class="mini-stat"><span>生成方案</span><strong>5份</strong></div>
+              <div class="mini-stat"><span>AI审核</span><strong>12份</strong></div>
+            </div>
+            <div class="agent-actions"><button class="enter-btn">进入</button></div>
+          </article>
+
+          <article class="panel agent-card" data-page="digital">
+            <div class="agent-top"><div class="agent-icon"><i class="fa fa-user-circle"></i></div><span class="sub-badge">智能调度</span></div>
+            <h3>数字人智能体</h3>
+            <p class="desc">通过语音和自然语言调度平台AI能力，实现查询、分析、调度和智能汇报。</p>
+            <div class="tag-row"><span class="tag">语音交互</span><span class="tag">视频调取</span><span class="tag">隐患分析</span><span class="tag">智能汇报</span></div>
+            <div class="mini-stats">
+              <div class="mini-stat"><span>今日对话</span><strong>86次</strong></div>
+              <div class="mini-stat"><span>调度视频</span><strong>18次</strong></div>
+              <div class="mini-stat"><span>响应成功率</span><strong>98%</strong></div>
+            </div>
+            <div class="agent-actions"><button class="enter-btn">进入</button></div>
+          </article>
+        </div>
+
+        <div class="bottom-overview">
+          <div class="panel overview-card">
+            <div class="section-title"><i class="fa fa-line-chart"></i> 今日AI调用</div>
+            <ul class="overview-list">
+              <li><span>知识问答</span><strong>326次</strong></li>
+              <li><span>现场识别</span><strong>1,560次</strong></li>
+              <li><span>数字人对话</span><strong>86次</strong></li>
+            </ul>
+          </div>
+          <div class="panel overview-card">
+            <div class="section-title"><i class="fa fa-exclamation-triangle"></i> 重点预警</div>
+            <ul class="overview-list">
+              <li><span>待处置隐患</span><strong>8项</strong></li>
+              <li><span>K12+350大桥</span><strong>较大风险</strong></li>
+              <li><span>AI审核发现问题</span><strong>36项</strong></li>
+            </ul>
+          </div>
+          <div class="panel overview-card">
+            <div class="section-title"><i class="fa fa-check-square-o"></i> 近期AI成果</div>
+            <ul class="overview-list">
+              <li><span>生成方案</span><strong>5份</strong></li>
+              <li><span>完成AI审核</span><strong>12份</strong></li>
+              <li><span>生成安全简报</span><strong>6份</strong></li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <main id="subPage" class="page">
+      <section class="sub-layout">
+        <aside class="panel sidebar">
+          <div class="sidebar-title">智能体导航</div>
+          <button class="side-item" data-page="home"><i class="fa fa-home"></i><span>AI大脑首页</span></button>
+          <button class="side-item" data-page="knowledge"><i class="fa fa-database"></i><span>AI知识库 / 知识图谱</span></button>
+          <button class="side-item" data-page="field"><i class="fa fa-video-camera"></i><span>AI现场智能体</span></button>
+          <button class="side-item" data-page="management"><i class="fa fa-briefcase"></i><span>AI管理智能体</span></button>
+          <button class="side-item" data-page="digital"><i class="fa fa-user-circle"></i><span>数字人智能体</span></button>
+        </aside>
+
+        <section id="mainContent" class="panel main-content"></section>
+        <aside id="rightPanel" class="panel right-panel"></aside>
+      </section>
+    </main>
+  </div>
+
+  <section id="assistantPanel" class="assistant-panel">
+    <div class="assistant-head">
+      <div class="assistant-title"><span class="float-face" style="width:36px;height:36px;border-radius:12px;font-size:18px;"><i class="fa fa-user-circle"></i></span> 阡陌通数字人</div>
+      <button class="close-btn" id="closeAssistant"><i class="fa fa-times"></i></button>
+    </div>
+    <div class="quick-commands" id="assistantCommands"></div>
+    <div class="chat-area" id="chatArea">
+      <div class="message bot">您好，我是阡陌通数字助手。您可以通过语音或文字查询项目数据、调度现场视频、分析隐患情况或生成管理简报。</div>
+    </div>
+    <div class="input-row">
+      <button class="voice"><i class="fa fa-microphone"></i></button>
+      <input class="chat-input" id="chatInput" placeholder="请输入指令，例如：分析当前项目风险">
+      <button class="send" id="sendBtn"><i class="fa fa-paper-plane"></i></button>
+    </div>
+  </section>
+
+  <div class="float-avatar" id="floatAvatar">
+    <div class="float-bubble" id="floatTip">您好，我可以帮您调度AI能力</div>
+    <div class="float-face"><i class="fa fa-user-circle"></i></div>
+  </div>
+
+  <script>
+    const pages = {
+      knowledge: {
+        title: 'AI知识库 / 知识图谱',
+        badge: '知识底座',
+        desc: '汇聚项目知识资产，构建工程管理智能底座。通过法规标准、方案模板、历史方案、隐患案例和图纸图片的结构化沉淀，为各类AI应用提供可信知识来源。',
+        apps: [
+          ['法规标准库', '沉淀国家规范、行业标准、地方标准和企业制度。', ['标准检索', '条文引用', '来源溯源'], '规范条文、引用依据、适用说明'],
+          ['方案模板库', '沉淀各专业工程施工方案模板，支撑AI方案编制调用。', ['模板检索', '分类筛选', '智能推荐'], '方案模板、章节结构、参考内容'],
+          ['历史方案库', '沉淀已审批、已归档和优秀施工方案，支持经验复用。', ['案例复用', '相似匹配', '方案对比'], '历史方案、优秀案例、参考依据'],
+          ['隐患案例库', '沉淀历史隐患、整改记录和处置经验，支撑隐患识别和处置建议。', ['隐患分类', '案例匹配', '整改建议'], '隐患案例、处置措施、整改依据'],
+          ['图纸图片库', '管理方案图片、工程图纸、现场照片和影像资料。', ['图片归档', '资料关联', '图像检索'], '方案图片、现场图片、关联资料'],
+          ['知识图谱', '构建工程类型、规范标准、方案模板、风险隐患和处置建议之间的关系网络。', ['关系展示', '节点关联', '知识溯源'], '知识关系图、关联资料、推理路径']
+        ],
+        kpis: [['167', '方案模板'], ['150', '历史方案'], ['3,214', '法规标准'], ['413,202', '方案图片']],
+        timeline: ['新增《公路桥涵施工技术规范》相关条文', '更新桥梁工程方案模板3份', '归档隧道施工历史方案2份', '新增隐患案例18条'],
+        results: ['支撑AI方案编制生成方案5份', '支撑AI审核发现规范引用问题12项', '支撑知识问答完成326次查询'],
+        scenarios: ['查询法规标准', '查找历史方案', '复用方案模板', '查看隐患案例', '追溯知识来源'],
+        commands: ['查询桥梁工程相关法规标准', '查找一份类似的历史施工方案', '推荐隧道工程方案模板', '查看高处作业相关隐患案例']
+      },
+      field: {
+        title: 'AI现场智能体',
+        badge: '现场感知',
+        desc: '面向施工现场视频、无人机巡检和隐患识别场景，实现现场风险智能感知。通过AI代替或辅助人工进行高频巡检、风险发现、预警推送和整改跟踪。',
+        apps: [
+          ['AI视频巡检', '按照巡检计划对固定点位和重点作业面进行视频巡查。', ['视频巡检', '点位管理', '巡检记录'], '巡检记录、问题截图、巡检报告'],
+          ['AI无人机巡检', '对大范围、长距离、复杂地形区域进行无人机巡检。', ['航线巡检', '航拍识别', '异常定位'], '航线记录、航拍影像、异常点位、巡检报告'],
+          ['AI隐患识别', '基于视频和无人机画面识别安全隐患，自动分类、分级和预警。', ['图像识别', '智能分类', '风险分级'], '隐患记录、预警工单、处置建议'],
+          ['AI现场预警', '对重大隐患、重复隐患和超期未整改隐患进行提醒。', ['风险预警', '消息推送', '责任提醒'], '预警消息、责任人推送、处置跟踪'],
+          ['AI整改闭环', '跟踪隐患从发现、预警、推送、处置到复核闭环的全过程。', ['闭环管理', '整改跟踪', '复核确认'], '整改记录、复核结果、闭环报告']
+        ],
+        kpis: [['128路', '接入视频点位'], ['16处', '无人机巡检区域'], ['1,560次', '今日识别画面'], ['89%', '整改完成率']],
+        timeline: ['K12+350大桥识别到高处作业未系安全带', '2号隧道进口识别到临边防护缺失', '拌合站区域识别到人员未佩戴安全帽', '梁场区域识别到材料堆放不规范'],
+        results: ['生成安全巡检报告6份', '完成无人机巡检3次', '新增隐患案例18条'],
+        scenarios: ['日常视频巡检', '无人机边坡巡检', '重大隐患预警', '整改闭环跟踪', '现场安全态势分析'],
+        commands: ['查看今日隐患', '分析当前标段视频', '查询未闭环隐患', '生成安全巡检简报', '调出K12+350大桥现场视频']
+      },
+      management: {
+        title: 'AI管理智能体',
+        badge: '管理辅助',
+        desc: '面向项目管理、技术管理和资料审核等工作，提供智能问答、方案编制、AI审核和管理分析能力，减少重复性工作，提高管理效率。',
+        apps: [
+          ['AI知识问答', '围绕项目制度、法规标准、业务数据和历史资料进行问答。', ['智能问答', '来源溯源', '资料关联'], '问答结果、来源依据、关联资料'],
+          ['AI方案编制', '辅助生成桥梁、公路隧道、盾构隧道、水运、水务环保、建筑、道路、铁路隧道等工程方案。', ['方案生成', '模板调用', '风险提示'], '方案初稿、章节目录、参考依据、风险提示'],
+          ['AI审核', '对施工方案、专项方案和管理资料进行完整性、合规性和风险点检查。', ['完整性检查', '合规审核', '问题识别'], '审核意见、问题清单、修改建议'],
+          ['AI管理分析', '围绕安全、质量、进度、产值等数据进行分析。', ['数据分析', '风险研判', '管理建议'], '管理摘要、风险提示、汇报材料'],
+          ['AI简报生成', '自动汇总项目运行情况，生成安全、质量、进度等管理简报。', ['内容汇总', '自动成文', '报告输出'], '日报、周报、专项简报、汇报摘要']
+        ],
+        kpis: [['326次', '今日知识问答'], ['5份', '今日生成方案'], ['12份', '今日AI审核'], ['36项', '发现资料问题']],
+        timeline: ['完成桥梁工程专项方案初稿生成', 'AI审核发现隧道方案缺少应急措施', '完成本周安全隐患整改简报生成', '知识问答查询高处作业规范条文'],
+        results: ['生成施工方案5份', '完成AI审核12份', '输出管理简报6份'],
+        scenarios: ['生成专项施工方案', '审核方案文件', '查询规范条文', '生成管理汇报', '分析隐患高发类型'],
+        commands: ['生成一份桥梁工程专项施工方案', '审核这份隧道施工方案', '查询高处作业安全带使用规范', '生成本周安全隐患整改情况简报']
+      },
+      digital: {
+        title: '数字人智能体',
+        badge: '统一交互',
+        desc: '作为AI大脑统一交互前台，支持通过语音或文字调度平台能力。用户可通过自然语言完成知识查询、视频查看、隐患分析、方案调用和管理简报生成。',
+        apps: [
+          ['语音交互', '支持通过语音发起查询、调度和分析指令。', ['语音输入', '语义理解', '语音播报'], '自然语言指令、语音反馈'],
+          ['知识问答', '调用知识库回答规范、制度、项目资料相关问题。', ['知识调用', '来源溯源', '综合回答'], '知识答案、引用来源、关联资料'],
+          ['视频调度', '根据项目、标段、点位调出现场视频或巡检记录。', ['点位识别', '视频调取', '画面展示'], '视频窗口、巡检记录、点位信息'],
+          ['隐患分析', '汇总视频识别、无人机巡检和隐患闭环情况，形成分析结论。', ['隐患汇总', '态势分析', '整改建议'], '隐患摘要、风险建议、整改状态'],
+          ['方案调用', '引导进入AI方案编制、AI审核等管理类应用。', ['应用调度', '任务引导', '结果查看'], '方案入口、审核入口、任务状态'],
+          ['简报生成', '根据项目数据和AI识别结果生成安全、巡检、整改等管理简报。', ['自动汇总', '智能成文', '摘要输出'], '安全简报、巡检简报、整改简报']
+        ],
+        kpis: [['86次', '今日对话'], ['18次', '调度视频'], ['6份', '生成简报'], ['98%', '响应成功率']],
+        timeline: ['完成三标段安全隐患分析', '调度K12+350大桥现场视频', '生成今日安全巡检简报', '查询桥梁工程相关规范'],
+        results: ['完成视频调度18次', '生成安全简报6份', '完成隐患分析12次'],
+        scenarios: ['查看现场视频', '分析安全隐患', '查询整改闭环率', '生成巡检简报', '调出无人机记录', '检查方案缺项'],
+        commands: ['查看麻阳高速一标段今日现场视频', '分析今天视频识别的安全隐患情况', '生成一份今日安全巡检简报', '检查某专项施工方案是否存在缺项']
+      }
+    };
+
+    let currentPage = 'home';
+    let fieldDemoMode = 'videoFirst';
+    let videoGridMode = 3;
+    const homePage = document.getElementById('homePage');
+    const subPage = document.getElementById('subPage');
+    const mainContent = document.getElementById('mainContent');
+    const rightPanel = document.getElementById('rightPanel');
+    const assistantPanel = document.getElementById('assistantPanel');
+    const assistantCommands = document.getElementById('assistantCommands');
+    const chatArea = document.getElementById('chatArea');
+    const floatTip = document.getElementById('floatTip');
+
+    function renderFieldApps(apps, mode) {
+      const cls = mode === 'strip' ? 'app-card compact' : 'app-card compact';
+      return apps.map(app => `
+        <article class="${cls}">
+          <h3>${app[0]}</h3>
+          <p>${app[1]}</p>
+          <div class="app-tags">${app[2].slice(0, 2).map(tag => `<span class="app-tag">${tag}</span>`).join('')}</div>
+          <div class="output">输出：${app[3]}</div>
+          <button class="open-app">进入应用</button>
+        </article>
+      `).join('');
+    }
+
+    function renderVideoTile(index) {
+      const points = [
+        ['K12+350大桥桥面作业区', '发现2项隐患', 'warn'],
+        ['2号隧道进口', '发现1项隐患', 'warn'],
+        ['梁场区域', '暂无异常', 'safe'],
+        ['拌合站区域', '发现1项隐患', 'warn'],
+        ['K8+200配电箱区域', '发现1项隐患', 'warn'],
+        ['K15+000边坡作业面', '识别正常', 'safe'],
+        ['钢筋加工场', '发现1项隐患', 'warn'],
+        ['材料堆场', '识别正常', 'safe'],
+        ['三河口互通作业区', '发现1项隐患', 'warn']
+      ];
+      const [name, status, type] = points[index] || points[0];
+      const boxes = index === 0 ? `
+        <div class="tile-detect safe" style="left:17%;top:34%;width:18%;height:30%;"><span class="tile-tag">人员识别正常</span></div>
+        <div class="tile-detect" style="left:41%;top:30%;width:20%;height:28%;"><span class="tile-tag">未系安全带</span></div>
+        <div class="tile-detect warn" style="left:58%;top:58%;width:28%;height:15%;"><span class="tile-tag">临边防护不到位</span></div>
+      ` : type === 'warn' ? `
+        <div class="tile-detect" style="left:34%;top:32%;width:26%;height:30%;"><span class="tile-tag">隐患目标</span></div>
+      ` : `
+        <div class="tile-detect safe" style="left:32%;top:34%;width:28%;height:30%;"><span class="tile-tag">目标正常</span></div>
+      `;
+      return `
+        <div class="video-tile">
+          <div class="tile-label"><i class="fa fa-video-camera"></i> ${name}</div>
+          ${boxes}
+          <div class="tile-status"><span>AI识别中</span><strong style="color:${type === 'safe' ? '#70e49b' : '#ffd18a'}">${status}</strong></div>
+        </div>
+      `;
+    }
+
+    function renderVideoMosaic() {
+      return `
+        <div id="videoMosaic" class="video-mosaic grid-${videoGridMode}">
+          ${Array.from({ length: videoGridMode }, (_, i) => renderVideoTile(i)).join('')}
+        </div>
+      `;
+    }
+
+    function renderFieldPage(data, baseHead) {
+      const gridIcons = {
+        1: 'fa-square-o',
+        2: 'fa-columns',
+        3: 'fa-th-large',
+        4: 'fa-th',
+        6: 'fa-table'
+      };
+      const viewTools = `
+        <div class="view-actions">
+          <div class="view-switch">
+            ${[1, 2, 3, 4, 6].map(num => `<button class="${videoGridMode === num ? 'active' : ''}" data-video-grid="${num}" title="${num}宫格" aria-label="${num}宫格"><i class="fa ${gridIcons[num]}"></i></button>`).join('')}
+          </div>
+          <button class="icon-btn" data-fullscreen="video" title="全屏"><i class="fa fa-expand"></i></button>
+        </div>`;
+
+      if (fieldDemoMode === 'videoFirst') {
+        mainContent.classList.add('field-page');
+        mainContent.innerHTML = `
+          ${baseHead}
+          <div class="field-board video-first">
+            <div class="field-toolbar">
+              <div class="field-toolbar-title"><i class="fa fa-eye"></i> AI识别画面预览 <span class="zone-sub">支持多路巡检画面切换，适合演示AI识别效果</span></div>
+              ${viewTools}
+            </div>
+            <div class="video-showcase">
+              ${renderVideoMosaic()}
+            </div>
+            <div class="field-app-strip">
+              <div class="zone-head">
+                <div class="zone-title"><i class="fa fa-th-large"></i> 具体AI应用入口</div>
+                <div class="zone-sub">点击进入厂商AI应用系统</div>
+              </div>
+              <div class="apps-grid strip">${renderFieldApps(data.apps, 'strip')}</div>
+            </div>
+          </div>
+          <div class="panel scenario-box">
+            <div class="section-title" style="margin:0;"><i class="fa fa-refresh"></i> 闭环流程</div>
+            <div class="scenario-tags"><span class="tag">视频/无人机采集</span><span class="tag">AI识别隐患</span><span class="tag">自动分级预警</span><span class="tag">推送责任人</span><span class="tag">整改复核闭环</span></div>
+          </div>`;
+        return;
+      }
+
+      mainContent.classList.add('field-page');
+      mainContent.innerHTML = `
+        ${baseHead}
+        <div class="field-board balanced">
+          <div class="field-toolbar">
+            <div class="field-toolbar-title"><i class="fa fa-columns"></i> 应用入口 + AI识别画面 <span class="zone-sub">入口与画面并列，避免应用被弱化</span></div>
+            ${switcher}
+          </div>
+          <div class="balanced-grid">
+            <div class="field-app-zone">
+              <div class="zone-head">
+                <div class="zone-title"><i class="fa fa-th-large"></i> 具体AI应用</div>
+                <div class="zone-sub">二级页核心入口</div>
+              </div>
+              <div class="apps-grid compact">${renderFieldApps(data.apps, 'compact')}</div>
+            </div>
+            <div class="preview-zone">
+              <div class="zone-head">
+                <div class="zone-title"><i class="fa fa-crosshairs"></i> AI识别画面预览</div>
+                <div class="zone-sub">场景化展示</div>
+              </div>
+              ${renderVideoPreview('small')}
+            </div>
+          </div>
+        </div>
+        <div class="panel scenario-box">
+          <div class="section-title" style="margin:0;"><i class="fa fa-refresh"></i> 闭环流程</div>
+          <div class="scenario-tags"><span class="tag">视频/无人机采集</span><span class="tag">AI识别隐患</span><span class="tag">自动分级预警</span><span class="tag">推送责任人</span><span class="tag">整改复核闭环</span></div>
+        </div>`;
+    }
+
+    function renderSubPage(key) {
+      const data = pages[key];
+      currentPage = key;
+      homePage.classList.remove('active');
+      subPage.classList.add('active');
+      document.querySelectorAll('.side-item').forEach(item => item.classList.toggle('active', item.dataset.page === key));
+      mainContent.classList.toggle('digital-page', key === 'digital');
+      mainContent.classList.remove('field-page');
+
+      const appsHtml = data.apps.map(app => `
+        <article class="app-card">
+          <h3>${app[0]}</h3>
+          <p>${app[1]}</p>
+          <div class="app-tags">${app[2].map(tag => `<span class="app-tag">${tag}</span>`).join('')}</div>
+          <div class="output">输出：${app[3]}</div>
+          <button class="open-app">进入应用</button>
+        </article>
+      `).join('');
+
+      const baseHead = `
+        <div class="sub-head">
+          <div>
+            <h2>${data.title}</h2>
+            <p>${data.desc}</p>
+          </div>
+          <div class="sub-badge">${data.badge}</div>
+        </div>`;
+
+      if (key === 'field') {
+        renderFieldPage(data, baseHead);
+      } else if (key === 'digital') {
+        mainContent.innerHTML = `
+          ${baseHead}
+          <div class="avatar-stage">
+            <div class="avatar-figure">
+              <div>
+                <div class="avatar-orb"><i class="fa fa-user-circle"></i></div>
+                <div style="text-align:center;margin-top:16px;color:#bdd0ee;">阡陌通数字助手 · 随时待命</div>
+              </div>
+            </div>
+            <div class="apps-grid">${appsHtml}</div>
+          </div>
+          <div class="panel scenario-box">
+            <div class="section-title" style="margin:0;"><i class="fa fa-microphone"></i> 演示指令</div>
+            <div class="command-list">${data.commands.map(cmd => `<div class="command">${cmd}</div>`).join('')}</div>
+          </div>`;
+      } else {
+        mainContent.innerHTML = `
+          ${baseHead}
+          <div class="apps-grid">${appsHtml}</div>
+          <div class="panel scenario-box">
+            <div class="section-title" style="margin:0;"><i class="fa fa-map-signs"></i> 典型场景</div>
+            <div class="scenario-tags">${data.scenarios.map(item => `<span class="tag">${item}</span>`).join('')}</div>
+          </div>`;
+      }
+
+      rightPanel.innerHTML = `
+        <div class="right-card">
+          <div class="section-title"><i class="fa fa-dashboard"></i> 能力指标</div>
+          <div class="kpi-grid">${data.kpis.map(kpi => `<div class="kpi"><div class="num">${kpi[0]}</div><div class="name">${kpi[1]}</div></div>`).join('')}</div>
+        </div>
+        <div class="right-card">
+          <div class="section-title"><i class="fa fa-bolt"></i> 运行动态</div>
+          <div class="timeline">${data.timeline.map((item, i) => `<div class="timeline-item"><span class="timeline-time">${['14:35','14:12','13:50','11:30'][i] || '10:20'}</span><span>${item}</span></div>`).join('')}</div>
+        </div>
+        <div class="right-card">
+          <div class="section-title"><i class="fa fa-flag-checkered"></i> 近期成果</div>
+          ${data.results.map(item => `<div class="result-card">${item}</div>`).join('')}
+        </div>`;
+      updateAssistantCommands();
+    }
+
+    function showHome() {
+      currentPage = 'home';
+      subPage.classList.remove('active');
+      homePage.classList.add('active');
+      document.querySelectorAll('.side-item').forEach(item => item.classList.remove('active'));
+      updateAssistantCommands();
+    }
+
+    function updateAssistantCommands() {
+      const defaultCommands = {
+        home: ['介绍AI大脑能力', '查看今日AI调用情况', '分析当前项目风险', '打开现场智能体', '生成今日安全简报']
+      };
+      const commands = currentPage === 'home' ? defaultCommands.home : pages[currentPage].commands;
+      assistantCommands.innerHTML = commands.map(cmd => `<button class="quick-command">${cmd}</button>`).join('');
+      floatTip.textContent = currentPage === 'home' ? '您好，我可以帮您调度AI能力' : `正在查看${pages[currentPage].title}，可随时向我提问`;
+    }
+
+    function sendMessage(text) {
+      if (!text.trim()) return;
+      chatArea.insertAdjacentHTML('beforeend', `<div class="message user">${text}</div>`);
+      const reply = buildReply(text);
+      chatArea.insertAdjacentHTML('beforeend', `<div class="message bot">${reply}</div>`);
+      document.getElementById('chatInput').value = '';
+    }
+
+    function buildReply(text) {
+      if (text.includes('现场') || text.includes('视频') || text.includes('隐患')) {
+        return '已为您汇总现场智能体数据：今日识别画面1,560次，发现隐患23项，待处置8项，整改完成率89%。建议重点关注K12+350大桥桥面作业区。';
+      }
+      if (text.includes('方案') || text.includes('审核') || text.includes('管理')) {
+        return '已为您定位到AI管理智能体：今日知识问答326次，生成方案5份，AI审核12份，发现资料问题36项。可进入AI方案编制或AI审核应用继续处理。';
+      }
+      if (text.includes('知识') || text.includes('标准') || text.includes('规范')) {
+        return '已为您查询知识库：当前沉淀方案模板167份、历史方案150份、法规标准3,214条、方案图片413,202张，可进一步查看来源依据。';
+      }
+      return '我可以帮您介绍AI大脑能力、查看今日AI调用、调度现场视频、分析隐患情况，或生成项目管理简报。';
+    }
+
+    document.querySelectorAll('[data-page]').forEach(el => {
+      el.addEventListener('click', () => {
+        const page = el.dataset.page;
+        if (page === 'home') showHome();
+        else renderSubPage(page);
+      });
+    });
+    document.getElementById('floatAvatar').addEventListener('click', () => {
+      assistantPanel.classList.toggle('open');
+      updateAssistantCommands();
+    });
+    document.getElementById('closeAssistant').addEventListener('click', () => assistantPanel.classList.remove('open'));
+    document.getElementById('sendBtn').addEventListener('click', () => sendMessage(document.getElementById('chatInput').value));
+    document.getElementById('chatInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendMessage(e.target.value);
+    });
+    assistantCommands.addEventListener('click', (e) => {
+      if (e.target.classList.contains('quick-command')) sendMessage(e.target.textContent);
+    });
+    mainContent.addEventListener('click', (e) => {
+      const gridBtn = e.target.closest('[data-video-grid]');
+      if (gridBtn) {
+        videoGridMode = Number(gridBtn.dataset.videoGrid);
+        renderSubPage('field');
+        return;
+      }
+      const fullscreenBtn = e.target.closest('[data-fullscreen="video"]');
+      if (fullscreenBtn) {
+        const target = document.getElementById('videoMosaic');
+        if (target?.requestFullscreen) target.requestFullscreen();
+        else if (target?.webkitRequestFullscreen) target.webkitRequestFullscreen();
+        return;
+      }
+      const modeBtn = e.target.closest('[data-field-mode]');
+      if (!modeBtn) return;
+      fieldDemoMode = modeBtn.dataset.fieldMode;
+      renderSubPage('field');
+    });
+    updateAssistantCommands();
+  </script>
+</body>
+</html>
