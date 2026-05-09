@@ -13,9 +13,13 @@
       font-family: "Microsoft YaHei", "PingFang SC", Arial, sans-serif;
       color: #eaf2ff;
       background:
-        radial-gradient(circle at 15% 10%, rgba(47, 84, 235, .28), transparent 30%),
-        radial-gradient(circle at 88% 14%, rgba(0, 180, 216, .18), transparent 28%),
-        linear-gradient(135deg, #081426 0%, #101a35 54%, #06111f 100%);
+        linear-gradient(rgba(79, 150, 255, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79, 150, 255, .035) 1px, transparent 1px),
+        radial-gradient(circle at 50% 0%, rgba(33, 147, 255, .34), transparent 34%),
+        radial-gradient(circle at 12% 16%, rgba(47, 84, 235, .24), transparent 32%),
+        radial-gradient(circle at 88% 12%, rgba(0, 180, 216, .2), transparent 30%),
+        linear-gradient(135deg, #030a18 0%, #071b36 52%, #03101d 100%);
+      background-size: 42px 42px, 42px 42px, auto, auto, auto, auto;
     }
     .screen { width: 100vw; height: 100vh; overflow: hidden; }
     .topbar {
@@ -65,6 +69,7 @@
       gap: 18px;
     }
     .panel {
+      position: relative;
       border: 1px solid rgba(103, 143, 233, .22);
       border-radius: 14px;
       background: linear-gradient(145deg, rgba(13, 31, 58, .78), rgba(7, 21, 41, .56));
@@ -265,7 +270,7 @@
     .app-card.compact .app-tag { font-size: 10px; padding: 4px 6px; }
     .app-card.compact .output { display: none; }
     .app-card.compact .open-app { height: 28px; right: 10px; bottom: 10px; font-size: 12px; }
-    .field-page { grid-template-rows: auto 1fr 86px; }
+    .field-page { grid-template-rows: auto 1fr 0; }
     .field-board {
       min-height: 0;
       overflow: hidden;
@@ -276,7 +281,7 @@
       border: 1px solid rgba(110, 153, 244, .18);
       border-radius: 14px;
     }
-    .field-board.video-first { grid-template-rows: 38px minmax(0, 1fr) 158px; }
+    .field-board.video-first { grid-template-rows: 38px minmax(0, 1fr) 320px; }
     .field-board.balanced { grid-template-rows: 38px minmax(0, 1fr); }
     .field-toolbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .field-toolbar-title { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 800; }
@@ -528,9 +533,162 @@
     .level { padding: 3px 6px; border-radius: 6px; background: rgba(255, 184, 77, .22); color: #ffd18a; white-space: nowrap; font-size: 11px; }
     .level.blue { background: rgba(75, 150, 255, .18); color: #9fc4ff; }
     .field-app-strip { min-height: 0; }
+    .workflow-panel {
+      min-height: 0;
+      overflow: hidden;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(9, 25, 49, .74);
+      border: 1px solid rgba(110, 153, 244, .16);
+    }
+    .workflow-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .workflow-title { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; }
+    .workflow-steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 9px;
+      margin-bottom: 8px;
+    }
+    .workflow-step {
+      position: relative;
+      padding: 8px 9px;
+      border-radius: 10px;
+      background: rgba(28, 56, 102, .42);
+      border: 1px solid rgba(110, 153, 244, .16);
+      min-width: 0;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .workflow-step::after {
+      content: "→";
+      position: absolute;
+      right: -10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: rgba(126, 177, 255, .55);
+      font-weight: 800;
+    }
+    .workflow-step:last-child::after { display: none; }
+    .workflow-step.active {
+      border-color: rgba(255, 184, 77, .45);
+      background: rgba(255, 184, 77, .11);
+    }
+    .workflow-step.selected {
+      border-color: rgba(112, 185, 255, .72);
+      box-shadow: 0 0 20px rgba(47, 84, 235, .18);
+    }
+    .workflow-step.done {
+      border-color: rgba(73, 209, 125, .28);
+      background: rgba(73, 209, 125, .08);
+    }
+    .step-name { display: flex; align-items: center; gap: 6px; color: #f5fbff; font-size: 13px; font-weight: 800; margin-bottom: 5px; }
+    .step-desc { color: #91a8ce; font-size: 11px; line-height: 1.35; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .case-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 1.2fr .9fr;
+      gap: 10px;
+      min-height: 0;
+    }
+    .case-card {
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(12, 29, 55, .68);
+      border: 1px solid rgba(110, 153, 244, .16);
+      min-width: 0;
+    }
+    .case-title { color: #ffffff; font-size: 13px; font-weight: 800; margin-bottom: 7px; }
+    .case-line { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; color: #adc0df; font-size: 12px; line-height: 1.45; }
+    .case-line strong { color: #fff; font-weight: 800; text-align: right; white-space: normal; }
+    .workflow-app-row {
+      margin-top: 9px;
+      padding: 8px 10px;
+      display: grid;
+      grid-template-columns: 126px 1fr;
+      align-items: center;
+      gap: 12px;
+      border-radius: 10px;
+      background: linear-gradient(90deg, rgba(47, 84, 235, .18), rgba(12, 29, 55, .58));
+      border: 1px solid rgba(112, 170, 255, .24);
+    }
+    .workflow-app-label {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #dbeaff;
+      font-size: 14px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .support-apps {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 9px;
+      min-width: 0;
+    }
+    .support-app {
+      height: 38px;
+      padding: 0 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(112, 185, 255, .36);
+      background: rgba(34, 67, 128, .52);
+      color: #eef6ff;
+      font-size: 13px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .06);
+    }
+    .support-app-main {
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .support-app-enter {
+      height: 22px;
+      padding: 0 7px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      flex: 0 0 auto;
+      color: #ffffff;
+      background: rgba(41, 151, 255, .34);
+      border: 1px solid rgba(130, 193, 255, .28);
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .support-app:hover {
+      border-color: rgba(112, 185, 255, .56);
+      background: linear-gradient(135deg, rgba(47, 84, 235, .56), rgba(23, 159, 208, .42));
+      transform: translateY(-1px);
+    }
+    .workflow-actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .workflow-action {
+      height: 30px;
+      padding: 0 12px;
+      border: 1px solid rgba(112, 170, 255, .28);
+      border-radius: 8px;
+      color: #fff;
+      background: linear-gradient(135deg, rgba(47, 84, 235, .72), rgba(23, 159, 208, .72));
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .workflow-action.secondary {
+      color: #cfe0ff;
+      background: rgba(47, 84, 235, .16);
+    }
+    .workflow-action:disabled { opacity: .45; cursor: not-allowed; }
     .scenario-box { padding: 16px; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: start; }
     .scenario-tags { display: flex; flex-wrap: wrap; gap: 8px; }
     .right-panel { padding: 16px; display: grid; grid-template-rows: auto auto 1fr; gap: 14px; }
+    .right-panel.field-right { grid-template-rows: auto 1fr; }
     .right-card { padding: 16px; border-radius: 12px; border: 1px solid rgba(110, 153, 244, .18); background: rgba(10, 26, 50, .58); }
     .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .kpi { padding: 12px; border-radius: 10px; background: rgba(28, 56, 102, .45); border: 1px solid rgba(110, 153, 244, .14); }
@@ -540,16 +698,106 @@
     .timeline-item { display: grid; grid-template-columns: 44px 1fr; gap: 8px; }
     .timeline-time { color: #71b2ff; }
     .result-card { margin-top: 10px; padding: 12px; border-radius: 10px; background: rgba(47, 84, 235, .12); border: 1px solid rgba(106, 150, 255, .16); color: #bdd0ee; font-size: 13px; line-height: 1.6; }
-    .digital-page { grid-template-rows: auto 1fr 150px; }
+    .process-list { display: grid; gap: 9px; }
+    .process-tabs {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .process-tab {
+      height: 34px;
+      border: 1px solid rgba(112, 170, 255, .18);
+      border-radius: 9px;
+      color: #a9bad7;
+      background: rgba(28, 56, 102, .34);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .process-tab.active {
+      color: #fff;
+      border-color: rgba(112, 185, 255, .64);
+      background: rgba(47, 84, 235, .2);
+    }
+    .node-list { display: grid; gap: 9px; }
+    .node-list-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid rgba(110, 153, 244, .16);
+      background: rgba(28, 56, 102, .36);
+      cursor: pointer;
+    }
+    .node-list-item:hover {
+      border-color: rgba(112, 185, 255, .5);
+      background: rgba(47, 84, 235, .14);
+    }
+    .node-list-item.active {
+      border-color: rgba(255, 184, 77, .58);
+      background: rgba(255, 184, 77, .1);
+    }
+    .node-list-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px; }
+    .node-list-title { color: #fff; font-size: 13px; font-weight: 800; }
+    .node-list-time { color: #7faeff; font-size: 11px; font-weight: 800; white-space: nowrap; }
+    .node-list-meta { color: #91a8ce; font-size: 12px; line-height: 1.4; }
+    .right-detail-box {
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(47, 84, 235, .12);
+      border: 1px solid rgba(106, 150, 255, .18);
+    }
+    .right-detail-label {
+      color: #7faeff;
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 5px;
+    }
+    .process-card {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      align-items: center;
+      gap: 10px;
+      padding: 10px;
+      border-radius: 10px;
+      background: rgba(28, 56, 102, .42);
+      border: 1px solid rgba(110, 153, 244, .16);
+    }
+    .process-card.active {
+      border-color: rgba(112, 185, 255, .64);
+      background: rgba(47, 84, 235, .16);
+    }
+    .process-node { color: #fff; font-size: 13px; font-weight: 800; }
+    .process-data { color: #91a8ce; font-size: 12px; line-height: 1.45; }
+    .process-data strong { color: #fff; }
+    .process-view {
+      height: 28px;
+      padding: 0 9px;
+      border: 1px solid rgba(112, 170, 255, .24);
+      border-radius: 8px;
+      color: #cfe0ff;
+      background: rgba(47, 84, 235, .18);
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .digital-page { grid-template-rows: auto 1fr; }
     .avatar-stage {
       display: grid;
-      grid-template-columns: 330px 1fr;
+      grid-template-columns: 320px minmax(0, 1fr);
       gap: 16px;
       min-height: 0;
     }
     .avatar-figure {
       display: grid;
-      place-items: center;
+      grid-template-rows: 1fr auto;
+      align-items: center;
+      justify-items: center;
+      gap: 14px;
+      padding: 20px;
       border-radius: 16px;
       background:
         radial-gradient(circle at 50% 28%, rgba(73, 130, 255, .35), transparent 34%),
@@ -568,6 +816,166 @@
       border: 1px solid rgba(171, 210, 255, .42);
       box-shadow: 0 0 42px rgba(47, 84, 235, .32);
     }
+    .avatar-name { text-align: center; color: #eaf2ff; font-weight: 800; font-size: 16px; }
+    .avatar-status { margin-top: 6px; color: #8fa6cc; font-size: 12px; }
+    .digital-abilities {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .digital-ability {
+      height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border-radius: 8px;
+      color: #cfe0ff;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(47, 84, 235, .16);
+      border: 1px solid rgba(112, 170, 255, .2);
+    }
+    .digital-chat-panel {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: 1fr 48px;
+      gap: 12px;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(10, 26, 50, .58);
+      border: 1px solid rgba(110, 153, 244, .2);
+    }
+    .digital-chat-window {
+      min-height: 0;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(5, 17, 34, .72);
+      border: 1px solid rgba(110, 153, 244, .14);
+    }
+    .digital-msg {
+      max-width: 78%;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: #d9e8ff;
+      font-size: 13px;
+      line-height: 1.55;
+      background: rgba(47, 84, 235, .16);
+    }
+    .digital-msg.user {
+      justify-self: end;
+      color: #fff;
+      background: rgba(23, 159, 208, .22);
+      border: 1px solid rgba(80, 190, 255, .18);
+    }
+    .thinking-chain {
+      display: grid;
+      gap: 7px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(18, 44, 80, .5);
+      border: 1px solid rgba(110, 153, 244, .16);
+      color: #adc0df;
+      font-size: 12px;
+    }
+    .thinking-chain div { display: flex; align-items: center; gap: 8px; }
+    .thinking-chain i { color: #73c7ff; }
+    .digital-video-result {
+      min-height: 0;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 10px;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(8, 24, 48, .7);
+      border: 1px solid rgba(112, 170, 255, .2);
+    }
+    .digital-video-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #dbeaff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .digital-video-head span:last-child { color: #77d5ff; font-size: 12px; }
+    .digital-video-frame {
+      position: relative;
+      min-height: 0;
+      overflow: hidden;
+      border-radius: 10px;
+      border: 1px solid rgba(117, 165, 255, .24);
+      background:
+        linear-gradient(0deg, rgba(7, 17, 32, .54), rgba(7, 17, 32, .54)),
+        repeating-linear-gradient(90deg, rgba(117,165,255,.08) 0 1px, transparent 1px 72px),
+        repeating-linear-gradient(0deg, rgba(117,165,255,.07) 0 1px, transparent 1px 48px),
+        radial-gradient(circle at 42% 42%, rgba(93, 146, 255, .26), transparent 20%),
+        radial-gradient(circle at 70% 60%, rgba(0, 180, 216, .16), transparent 18%),
+        #071628;
+    }
+    .digital-video-frame::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 46%;
+      height: 2px;
+      background: rgba(56, 205, 255, .58);
+      box-shadow: 0 0 14px rgba(56, 205, 255, .8);
+    }
+    .video-caption {
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      padding: 5px 8px;
+      border-radius: 7px;
+      color: #dcecff;
+      font-size: 12px;
+      background: rgba(5, 16, 32, .78);
+      border: 1px solid rgba(117, 165, 255, .2);
+    }
+    .lab-box {
+      position: absolute;
+      left: 36%;
+      top: 32%;
+      width: 30%;
+      height: 34%;
+      border: 2px solid #2fe18c;
+      border-radius: 8px;
+      box-shadow: 0 0 24px rgba(47, 225, 140, .28);
+    }
+    .lab-box span {
+      position: absolute;
+      left: 8px;
+      top: -28px;
+      padding: 4px 7px;
+      border-radius: 7px;
+      color: #fff;
+      font-size: 12px;
+      background: rgba(5, 16, 32, .86);
+      white-space: nowrap;
+    }
+    .digital-input {
+      display: grid;
+      grid-template-columns: 42px 1fr 92px;
+      gap: 8px;
+    }
+    .digital-input button,
+    .digital-input input {
+      border: 1px solid rgba(112, 170, 255, .22);
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(16, 32, 59, .78);
+      outline: none;
+    }
+    .digital-input input { padding: 0 12px; }
+    .digital-input button { cursor: pointer; }
+    .digital-input .send-command { background: linear-gradient(135deg, #2f54eb, #1f9fd0); border: 0; font-weight: 800; }
     .command-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .command {
       padding: 12px;
@@ -741,7 +1149,7 @@
 
           <article class="panel agent-card" data-page="digital">
             <div class="agent-top"><div class="agent-icon"><i class="fa fa-user-circle"></i></div><span class="sub-badge">智能调度</span></div>
-            <h3>数字人智能体</h3>
+            <h3>数字人</h3>
             <p class="desc">通过语音和自然语言调度平台AI能力，实现查询、分析、调度和智能汇报。</p>
             <div class="tag-row"><span class="tag">语音交互</span><span class="tag">视频调取</span><span class="tag">隐患分析</span><span class="tag">智能汇报</span></div>
             <div class="mini-stats">
@@ -790,7 +1198,7 @@
           <button class="side-item" data-page="knowledge"><i class="fa fa-database"></i><span>AI知识库 / 知识图谱</span></button>
           <button class="side-item" data-page="field"><i class="fa fa-video-camera"></i><span>AI现场智能体</span></button>
           <button class="side-item" data-page="management"><i class="fa fa-briefcase"></i><span>AI管理智能体</span></button>
-          <button class="side-item" data-page="digital"><i class="fa fa-user-circle"></i><span>数字人智能体</span></button>
+          <button class="side-item" data-page="digital"><i class="fa fa-user-circle"></i><span>数字人</span></button>
         </aside>
 
         <section id="mainContent" class="panel main-content"></section>
@@ -851,9 +1259,9 @@
           ['AI现场预警', '对重大隐患、重复隐患和超期未整改隐患进行提醒。', ['风险预警', '消息推送', '责任提醒'], '预警消息、责任人推送、处置跟踪'],
           ['AI整改闭环', '跟踪隐患从发现、预警、推送、处置到复核闭环的全过程。', ['闭环管理', '整改跟踪', '复核确认'], '整改记录、复核结果、闭环报告']
         ],
-        kpis: [['128路', '接入视频点位'], ['16处', '无人机巡检区域'], ['1,560次', '今日识别画面'], ['89%', '整改完成率']],
-        timeline: ['K12+350大桥识别到高处作业未系安全带', '2号隧道进口识别到临边防护缺失', '拌合站区域识别到人员未佩戴安全帽', '梁场区域识别到材料堆放不规范'],
-        results: ['生成安全巡检报告6份', '完成无人机巡检3次', '新增隐患案例18条'],
+        kpis: [['1,560次', '今日感知画面'], ['23项', 'AI识别隐患'], ['8项', '处置中'], ['65%', '今日闭环率']],
+        timeline: ['感知：K12+350大桥画面采集完成', '识别：发现作业人员未带安全帽', '预警：待生成', '处置：未开始', '闭环：未开始'],
+        results: ['已触发预警22项', '已完成闭环15项', '沉淀隐患案例18条'],
         scenarios: ['日常视频巡检', '无人机边坡巡检', '重大隐患预警', '整改闭环跟踪', '现场安全态势分析'],
         commands: ['查看今日隐患', '分析当前标段视频', '查询未闭环隐患', '生成安全巡检简报', '调出K12+350大桥现场视频']
       },
@@ -875,9 +1283,9 @@
         commands: ['生成一份桥梁工程专项施工方案', '审核这份隧道施工方案', '查询高处作业安全带使用规范', '生成本周安全隐患整改情况简报']
       },
       digital: {
-        title: '数字人智能体',
-        badge: '统一交互',
-        desc: '作为AI大脑统一交互前台，支持通过语音或文字调度平台能力。用户可通过自然语言完成知识查询、视频查看、隐患分析、方案调用和管理简报生成。',
+        title: '数字人',
+        badge: '智能总控',
+        desc: '作为AI大脑统一交互与调度入口，数字人负责理解管理者指令，统一调度知识库、现场智能体和管理智能体，完成查询、视频调取、智能分析、问答和汇报。',
         apps: [
           ['语音交互', '支持通过语音发起查询、调度和分析指令。', ['语音输入', '语义理解', '语音播报'], '自然语言指令、语音反馈'],
           ['知识问答', '调用知识库回答规范、制度、项目资料相关问题。', ['知识调用', '来源溯源', '综合回答'], '知识答案、引用来源、关联资料'],
@@ -889,14 +1297,19 @@
         kpis: [['86次', '今日对话'], ['18次', '调度视频'], ['6份', '生成简报'], ['98%', '响应成功率']],
         timeline: ['完成三标段安全隐患分析', '调度K12+350大桥现场视频', '生成今日安全巡检简报', '查询桥梁工程相关规范'],
         results: ['完成视频调度18次', '生成安全简报6份', '完成隐患分析12次'],
-        scenarios: ['查看现场视频', '分析安全隐患', '查询整改闭环率', '生成巡检简报', '调出无人机记录', '检查方案缺项'],
-        commands: ['查看麻阳高速一标段今日现场视频', '分析今天视频识别的安全隐患情况', '生成一份今日安全巡检简报', '检查某专项施工方案是否存在缺项']
+        scenarios: ['语音交互', '功能调度', '视频调取', '智能分析', '智能问答'],
+        commands: ['查看麻阳北一标实验室视频', '分析今天视频识别的安全隐患情况', '生成一份今日安全巡检简报', '检查某专项施工方案是否存在缺项']
       }
     };
 
     let currentPage = 'home';
     let fieldDemoMode = 'videoFirst';
     let videoGridMode = 3;
+    let closureStatus = 1;
+    let selectedClosureStep = '识别';
+    let selectedNodeDetail = '';
+    let selectedRightStep = '识别';
+    let selectedRightDetail = '';
     const homePage = document.getElementById('homePage');
     const subPage = document.getElementById('subPage');
     const mainContent = document.getElementById('mainContent');
@@ -921,7 +1334,7 @@
 
     function renderVideoTile(index) {
       const points = [
-        ['K12+350大桥桥面作业区', '发现2项隐患', 'warn'],
+        ['K12+350大桥桥面作业区', '发现3项隐患', 'warn'],
         ['2号隧道进口', '发现1项隐患', 'warn'],
         ['梁场区域', '暂无异常', 'safe'],
         ['拌合站区域', '发现1项隐患', 'warn'],
@@ -934,8 +1347,9 @@
       const [name, status, type] = points[index] || points[0];
       const boxes = index === 0 ? `
         <div class="tile-detect safe" style="left:17%;top:34%;width:18%;height:30%;"><span class="tile-tag">人员识别正常</span></div>
-        <div class="tile-detect" style="left:41%;top:30%;width:20%;height:28%;"><span class="tile-tag">未系安全带</span></div>
-        <div class="tile-detect warn" style="left:58%;top:58%;width:28%;height:15%;"><span class="tile-tag">临边防护不到位</span></div>
+        <div class="tile-detect" style="left:41%;top:30%;width:20%;height:28%;"><span class="tile-tag">未带安全帽</span></div>
+        <div class="tile-detect warn" style="left:58%;top:58%;width:28%;height:15%;"><span class="tile-tag">临边防护缺失或存在缺口</span></div>
+        <div class="tile-detect warn" style="left:65%;top:22%;width:18%;height:16%;"><span class="tile-tag">材料堆放混乱</span></div>
       ` : type === 'warn' ? `
         <div class="tile-detect" style="left:34%;top:32%;width:26%;height:30%;"><span class="tile-tag">隐患目标</span></div>
       ` : `
@@ -954,6 +1368,224 @@
       return `
         <div id="videoMosaic" class="video-mosaic grid-${videoGridMode}">
           ${Array.from({ length: videoGridMode }, (_, i) => renderVideoTile(i)).join('')}
+        </div>
+      `;
+    }
+
+    function getClosureState() {
+      const baseSteps = [
+        { key: '感知', icon: 'fa-video-camera', desc: '视频/无人机采集' },
+        { key: '识别', icon: 'fa-crosshairs', desc: 'AI识别隐患' },
+        { key: '预警', icon: 'fa-bell', desc: closureStatus >= 2 ? '已生成预警' : '待生成预警' },
+        { key: '处置', icon: 'fa-wrench', desc: closureStatus >= 3 ? '整改任务已派发' : '等待派发整改' },
+        { key: '闭环', icon: 'fa-check-circle', desc: closureStatus >= 4 ? '已复核归档' : '待复核归档' }
+      ];
+      const doneIndex = closureStatus === 1 ? 1 : closureStatus === 2 ? 2 : closureStatus === 3 ? 3 : 4;
+      const details = {
+        '感知': [['来源', 'AI视频巡检'], ['点位', 'K12+350大桥桥面作业区'], ['采集时间', '14:23:15'], ['画面来源', '3号摄像头']],
+        '识别': [['隐患类型', '作业人员未带安全帽'], ['识别置信度', '96%'], ['隐患等级', '较大隐患'], ['识别依据', '作业人员未正确佩戴安全帽']],
+        '预警': [['预警方式', closureStatus >= 2 ? '平台消息 + APP推送' : '待生成'], ['预警对象', closureStatus >= 2 ? '安全员张三、施工队负责人李四' : '-'], ['预警状态', closureStatus >= 2 ? '已推送' : '待推送'], ['工单编号', closureStatus >= 2 ? 'YH-20260509-001' : '-']],
+        '处置': [['责任单位', closureStatus >= 3 ? '桥梁施工班组' : '待派发'], ['处置建议', '立即停止作业，规范佩戴安全带'], ['整改期限', closureStatus >= 3 ? '2小时内' : '-'], ['当前状态', closureStatus >= 3 ? (closureStatus >= 4 ? '已整改' : '整改中') : '未开始']],
+        '闭环': [['复核方式', closureStatus >= 4 ? '整改照片 + 视频复核' : '待上传整改结果'], ['闭环状态', closureStatus >= 4 ? '已闭环' : '待复核'], ['案例沉淀', closureStatus >= 4 ? '已归入隐患案例库' : '完成后自动归档'], ['闭环时间', closureStatus >= 4 ? '14:52:31' : '-']]
+      };
+      const nodeStats = {
+        '感知': [['采集画面', '3路'], ['巡检点位', 'K12+350'], ['视频截图', '2张'], ['来源应用', 'AI视频巡检']],
+        '识别': [['识别目标', '3个'], ['命中规则', '2条'], ['置信度', '96%'], ['隐患等级', '较大']],
+        '预警': [['预警工单', closureStatus >= 2 ? '已生成' : '待生成'], ['推送人数', closureStatus >= 2 ? '2人' : '0人'], ['确认状态', closureStatus >= 2 ? '已确认' : '待推送'], ['预警编号', closureStatus >= 2 ? '001' : '-']],
+        '处置': [['责任单位', closureStatus >= 3 ? '桥梁施工班组' : '待派发'], ['整改期限', closureStatus >= 3 ? '2小时' : '-'], ['处置状态', closureStatus >= 3 ? (closureStatus >= 4 ? '已整改' : '整改中') : '未开始'], ['整改材料', closureStatus >= 4 ? '已上传' : '-']],
+        '闭环': [['复核方式', '视频+照片'], ['复核状态', closureStatus >= 4 ? '已通过' : '待复核'], ['案例归档', closureStatus >= 4 ? '已归档' : '待归档'], ['闭环耗时', closureStatus >= 4 ? '29分钟' : '-']]
+      };
+      const nodeLists = {
+        '感知': [
+          ['3号摄像头实时画面', 'K12+350大桥桥面作业区｜已截取关键帧', '14:23:15'],
+          ['无人机巡检补充画面', '桥面临边区域｜画面质量良好', '14:22:40'],
+          ['现场抓拍图片', '作业人员区域｜2张截图｜已关联隐患事件', '14:22:18']
+        ],
+        '识别': [
+          ['作业人员未带安全帽', '较大隐患｜置信度96%｜命中安全防护用品佩戴规则', '14:23:21'],
+          ['临边防护缺失或存在缺口', '一般隐患｜置信度89%｜命中临边防护规则', '14:23:18'],
+          ['材料堆放混乱', '一般隐患｜置信度91%｜命中文明施工规则', '14:23:17'],
+          ['作业人员目标识别', '识别3人｜2人合规｜1人异常', '14:23:16']
+        ],
+        '预警': [
+          [closureStatus >= 2 ? '预警工单YH-20260509-001' : '待生成预警工单', closureStatus >= 2 ? '较大隐患｜已推送2人｜已确认' : '较大隐患｜待推送责任人', closureStatus >= 2 ? '14:24:03' : '待处理'],
+          ['预警接收对象', closureStatus >= 2 ? '安全员张三、施工队负责人李四' : '系统已匹配待确认', closureStatus >= 2 ? '14:24:06' : '待处理'],
+          ['预警方式', closureStatus >= 2 ? '平台消息 + APP推送' : '待选择推送方式', closureStatus >= 2 ? '14:24:08' : '待处理']
+        ],
+        '处置': [
+          [closureStatus >= 3 ? '整改任务已派发' : '待派发整改任务', closureStatus >= 3 ? '桥梁施工班组｜2小时内整改｜整改中' : '建议派发至桥梁施工班组', closureStatus >= 3 ? '14:26:10' : '待处理'],
+          ['处置建议', '立即停止作业，规范佩戴安全带，并进行现场安全教育', '14:25:40'],
+          ['整改材料', closureStatus >= 4 ? '整改照片2张、复核视频1段' : closureStatus >= 3 ? '等待责任人上传' : '未开始', closureStatus >= 4 ? '14:46:28' : '待上传']
+        ],
+        '闭环': [
+          [closureStatus >= 4 ? '复核通过' : '待复核确认', closureStatus >= 4 ? '安全员张三复核通过' : '等待整改照片和视频复核', closureStatus >= 4 ? '14:52:31' : '待复核'],
+          ['案例归档', closureStatus >= 4 ? '已沉淀至隐患案例库' : '闭环后自动沉淀', closureStatus >= 4 ? '14:53:02' : '待归档'],
+          ['闭环报告', closureStatus >= 4 ? '已生成隐患闭环记录' : '待生成', closureStatus >= 4 ? '14:53:26' : '待生成']
+        ]
+      };
+      const processCards = [
+        ['感知', '画面采集', '3路视频 / 14:23:15'],
+        ['识别', 'AI识别', '隐患2项 / 置信度96%'],
+        ['预警', closureStatus >= 2 ? '已预警' : '待预警', closureStatus >= 2 ? '工单001 / 已推送2人' : '待生成预警工单'],
+        ['处置', closureStatus >= 3 ? (closureStatus >= 4 ? '已整改' : '整改中') : '待处置', closureStatus >= 3 ? '桥梁施工班组 / 2小时内' : '待派发责任单位'],
+        ['闭环', closureStatus >= 4 ? '已闭环' : '待复核', closureStatus >= 4 ? '已归档 / 耗时29分钟' : '等待复核确认']
+      ];
+      const kpis = closureStatus >= 4
+        ? [['1,560次', '今日感知画面'], ['23项', 'AI识别隐患'], ['7项', '处置中'], ['70%', '今日闭环率']]
+        : closureStatus >= 3
+          ? [['1,560次', '今日感知画面'], ['23项', 'AI识别隐患'], ['8项', '处置中'], ['65%', '今日闭环率']]
+          : closureStatus >= 2
+            ? [['1,560次', '今日感知画面'], ['23项', 'AI识别隐患'], ['9项', '待处置'], ['65%', '今日闭环率']]
+            : [['1,560次', '今日感知画面'], ['23项', 'AI识别隐患'], ['1项', '待生成预警'], ['65%', '今日闭环率']];
+      const timeline = [
+        '感知：K12+350大桥画面采集完成',
+        '识别：发现作业人员未带安全帽',
+        closureStatus >= 2 ? '预警：已生成工单YH-20260509-001' : '预警：待生成',
+        closureStatus >= 3 ? '处置：整改任务已派发至桥梁施工班组' : '处置：未开始',
+        closureStatus >= 4 ? '闭环：复核通过并归档案例库' : '闭环：等待整改复核'
+      ];
+      const results = closureStatus >= 4
+        ? ['已触发预警23项', '已完成闭环16项', '沉淀隐患案例19条']
+        : closureStatus >= 2
+          ? ['已触发预警23项', '已完成闭环15项', '沉淀隐患案例18条']
+          : ['已触发预警22项', '已完成闭环15项', '沉淀隐患案例18条'];
+      return { baseSteps, doneIndex, details, nodeStats, nodeLists, processCards, kpis, timeline, results };
+    }
+
+    function renderRightPanel(data) {
+      const state = currentPage === 'field' ? getClosureState() : null;
+      const kpis = state ? state.kpis : data.kpis;
+      const timeline = state ? state.timeline : data.timeline;
+      const results = state ? state.results : data.results;
+      rightPanel.classList.toggle('field-right', currentPage === 'field');
+      if (state) {
+        const rightList = state.nodeLists[selectedRightStep] || [];
+        const selectedRightItem = rightList.find(item => item[0] === selectedRightDetail);
+        const rightDetailHtml = selectedRightItem
+          ? `<div class="right-detail-box">
+              <div class="node-list-head">
+                <div class="node-list-title">${selectedRightItem[0]}</div>
+                <div class="node-list-time">${selectedRightItem[2] || ''}</div>
+              </div>
+              <div class="node-list-meta">${selectedRightItem[1]}</div>
+            </div>`
+          : '';
+        rightPanel.innerHTML = `
+          <div class="right-card">
+            <div class="section-title"><i class="fa fa-dashboard"></i> 能力指标</div>
+            <div class="kpi-grid">${kpis.map(kpi => `<div class="kpi"><div class="num">${kpi[0]}</div><div class="name">${kpi[1]}</div></div>`).join('')}</div>
+          </div>
+          <div class="right-card">
+            <div class="section-title"><i class="fa fa-tasks"></i> 流程实时状态</div>
+            <div class="process-tabs">
+              ${state.baseSteps.map(step => `<button class="process-tab ${selectedRightStep === step.key ? 'active' : ''}" data-right-step="${step.key}">${step.key}</button>`).join('')}
+            </div>
+            <div class="node-list">
+              ${rightList.map((item, index) => `
+                <div class="node-list-item ${selectedRightDetail === item[0] ? 'active' : ''}" data-right-step="${selectedRightStep}" data-right-detail="${item[0]}">
+                  <div>
+                    <div class="node-list-head">
+                      <div class="node-list-title">${item[0]}</div>
+                      <div class="node-list-time">${item[2] || ''}</div>
+                    </div>
+                    <div class="node-list-meta">${item[1]}</div>
+                  </div>
+                  <button class="process-view">查看</button>
+                </div>
+              `).join('')}
+            </div>
+            ${rightDetailHtml}
+          </div>`;
+        return;
+      }
+      rightPanel.innerHTML = `
+        <div class="right-card">
+          <div class="section-title"><i class="fa fa-dashboard"></i> 能力指标</div>
+          <div class="kpi-grid">${kpis.map(kpi => `<div class="kpi"><div class="num">${kpi[0]}</div><div class="name">${kpi[1]}</div></div>`).join('')}</div>
+        </div>
+        <div class="right-card">
+          <div class="section-title"><i class="fa fa-bolt"></i> 运行动态</div>
+          <div class="timeline">${timeline.map((item, i) => `<div class="timeline-item"><span class="timeline-time">${['14:23','14:23','14:24','14:26','14:52'][i] || '10:20'}</span><span>${item}</span></div>`).join('')}</div>
+        </div>
+        <div class="right-card">
+          <div class="section-title"><i class="fa fa-flag-checkered"></i> 近期成果</div>
+          ${results.map(item => `<div class="result-card">${item}</div>`).join('')}
+        </div>`;
+    }
+
+    function renderClosureWorkflow(apps) {
+      const state = getClosureState();
+      const detailRows = state.details[selectedClosureStep] || state.details['识别'];
+      const nodeStatRows = state.nodeStats[selectedClosureStep] || state.nodeStats['识别'];
+      const appIcons = {
+        'AI视频巡检': 'fa-video-camera',
+        'AI无人机巡检': 'fa-location-arrow',
+        'AI隐患识别': 'fa-crosshairs',
+        'AI现场预警': 'fa-bell',
+        'AI整改闭环': 'fa-check-circle'
+      };
+      const nodeActions = {
+        '感知': '<button class="workflow-action secondary" data-closure-action="screenshot">查看截图</button><button class="workflow-action secondary" data-closure-action="source">定位摄像头</button>',
+        '识别': closureStatus >= 2
+          ? '<button class="workflow-action secondary" data-closure-action="rule">查看识别依据</button><button class="workflow-action secondary" data-closure-action="order">查看预警工单</button>'
+          : '<button class="workflow-action secondary" data-closure-action="rule">查看识别依据</button><button class="workflow-action" data-closure-action="warn">生成预警</button>',
+        '预警': closureStatus >= 2
+          ? '<button class="workflow-action secondary" data-closure-action="order">查看预警工单</button><button class="workflow-action" data-closure-action="dispatch">派发整改</button>'
+          : '<button class="workflow-action" data-closure-action="warn">生成预警</button>',
+        '处置': closureStatus >= 3
+          ? '<button class="workflow-action secondary" data-closure-action="advice">查看处置建议</button><button class="workflow-action" data-closure-action="close">复核闭环</button>'
+          : '<button class="workflow-action" data-closure-action="dispatch">派发整改</button>',
+        '闭环': closureStatus >= 4
+          ? '<button class="workflow-action secondary" data-closure-action="archive">查看归档案例</button><button class="workflow-action secondary" data-closure-action="report">查看闭环报告</button>'
+          : '<button class="workflow-action" data-closure-action="close">复核闭环</button>'
+      };
+      const selectedDetailText = selectedNodeDetail
+        ? `<div class="case-line"><span>查看详情</span><strong>${selectedNodeDetail}</strong></div>`
+        : '<div class="case-line"><span>当前操作</span><strong>可点击本链路节点或下方操作按钮</strong></div>';
+      return `
+        <div class="workflow-panel">
+          <div class="workflow-head">
+            <div class="workflow-title"><i class="fa fa-random"></i> 隐患处置闭环链路</div>
+            <div class="zone-sub">当前案例：K12+350大桥桥面作业区 - 作业人员未带安全帽</div>
+          </div>
+          <div class="workflow-steps">
+            ${state.baseSteps.map((step, index) => `
+              <div class="workflow-step ${index <= state.doneIndex ? 'done' : ''} ${index === state.doneIndex && closureStatus < 4 ? 'active' : ''} ${selectedClosureStep === step.key ? 'selected' : ''}" data-closure-step="${step.key}">
+                <div class="step-name"><i class="fa ${step.icon}"></i> ${step.key}</div>
+                <div class="step-desc">${step.desc}</div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="case-grid">
+            <div class="case-card">
+              <div class="case-title">当前节点：${selectedClosureStep}</div>
+              ${detailRows.map(row => `<div class="case-line"><span>${row[0]}</span><strong>${row[1]}</strong></div>`).join('')}
+              ${selectedDetailText}
+            </div>
+            <div class="case-card">
+              <div class="case-title">${selectedClosureStep}节点实时数据</div>
+              ${nodeStatRows.map(row => `<div class="case-line"><span>${row[0]}</span><strong>${row[1]}</strong></div>`).join('')}
+            </div>
+            <div class="case-card">
+              <div class="case-title">操作推进</div>
+              <div class="case-line"><span>当前状态</span><strong>${closureStatus === 1 ? '已识别，待预警' : closureStatus === 2 ? '已预警，待派发' : closureStatus === 3 ? '整改中，待复核' : '已闭环'}</strong></div>
+              <div class="case-line"><span>当前节点</span><strong>${selectedClosureStep}</strong></div>
+              <div class="workflow-actions">
+                ${nodeActions[selectedClosureStep] || ''}
+              </div>
+            </div>
+          </div>
+          <div class="workflow-app-row">
+            <div class="workflow-app-label"><i class="fa fa-th-large"></i> 关联子应用</div>
+            <div class="support-apps">
+              ${apps.map(app => `
+                <button class="support-app" type="button">
+                  <span class="support-app-main"><i class="fa ${appIcons[app[0]] || 'fa-cube'}"></i>${app[0]}</span>
+                  <span class="support-app-enter">进入<i class="fa fa-angle-right"></i></span>
+                </button>
+              `).join('')}
+            </div>
+          </div>
         </div>
       `;
     }
@@ -986,50 +1618,11 @@
             <div class="video-showcase">
               ${renderVideoMosaic()}
             </div>
-            <div class="field-app-strip">
-              <div class="zone-head">
-                <div class="zone-title"><i class="fa fa-th-large"></i> 具体AI应用入口</div>
-                <div class="zone-sub">点击进入厂商AI应用系统</div>
-              </div>
-              <div class="apps-grid strip">${renderFieldApps(data.apps, 'strip')}</div>
-            </div>
+            ${renderClosureWorkflow(data.apps)}
           </div>
-          <div class="panel scenario-box">
-            <div class="section-title" style="margin:0;"><i class="fa fa-refresh"></i> 闭环流程</div>
-            <div class="scenario-tags"><span class="tag">视频/无人机采集</span><span class="tag">AI识别隐患</span><span class="tag">自动分级预警</span><span class="tag">推送责任人</span><span class="tag">整改复核闭环</span></div>
-          </div>`;
+          <div></div>`;
         return;
       }
-
-      mainContent.classList.add('field-page');
-      mainContent.innerHTML = `
-        ${baseHead}
-        <div class="field-board balanced">
-          <div class="field-toolbar">
-            <div class="field-toolbar-title"><i class="fa fa-columns"></i> 应用入口 + AI识别画面 <span class="zone-sub">入口与画面并列，避免应用被弱化</span></div>
-            ${switcher}
-          </div>
-          <div class="balanced-grid">
-            <div class="field-app-zone">
-              <div class="zone-head">
-                <div class="zone-title"><i class="fa fa-th-large"></i> 具体AI应用</div>
-                <div class="zone-sub">二级页核心入口</div>
-              </div>
-              <div class="apps-grid compact">${renderFieldApps(data.apps, 'compact')}</div>
-            </div>
-            <div class="preview-zone">
-              <div class="zone-head">
-                <div class="zone-title"><i class="fa fa-crosshairs"></i> AI识别画面预览</div>
-                <div class="zone-sub">场景化展示</div>
-              </div>
-              ${renderVideoPreview('small')}
-            </div>
-          </div>
-        </div>
-        <div class="panel scenario-box">
-          <div class="section-title" style="margin:0;"><i class="fa fa-refresh"></i> 闭环流程</div>
-          <div class="scenario-tags"><span class="tag">视频/无人机采集</span><span class="tag">AI识别隐患</span><span class="tag">自动分级预警</span><span class="tag">推送责任人</span><span class="tag">整改复核闭环</span></div>
-        </div>`;
     }
 
     function renderSubPage(key) {
@@ -1069,14 +1662,43 @@
             <div class="avatar-figure">
               <div>
                 <div class="avatar-orb"><i class="fa fa-user-circle"></i></div>
-                <div style="text-align:center;margin-top:16px;color:#bdd0ee;">阡陌通数字助手 · 随时待命</div>
+                <div class="avatar-name">阡陌通数字人</div>
+                <div class="avatar-status">AI大脑总控调度员 · 在线</div>
+              </div>
+              <div class="digital-abilities">
+                <span class="digital-ability"><i class="fa fa-microphone"></i>语音交互</span>
+                <span class="digital-ability"><i class="fa fa-random"></i>功能调度</span>
+                <span class="digital-ability"><i class="fa fa-video-camera"></i>视频调取</span>
+                <span class="digital-ability"><i class="fa fa-line-chart"></i>智能分析</span>
+                <span class="digital-ability"><i class="fa fa-comments"></i>智能问答</span>
+                <span class="digital-ability"><i class="fa fa-file-text-o"></i>智能汇报</span>
               </div>
             </div>
-            <div class="apps-grid">${appsHtml}</div>
-          </div>
-          <div class="panel scenario-box">
-            <div class="section-title" style="margin:0;"><i class="fa fa-microphone"></i> 演示指令</div>
-            <div class="command-list">${data.commands.map(cmd => `<div class="command">${cmd}</div>`).join('')}</div>
+            <div class="digital-chat-panel">
+              <div class="digital-chat-window">
+                <div class="digital-msg user">查看麻阳北一标实验室视频</div>
+                <div class="thinking-chain">
+                  <div><i class="fa fa-spinner fa-spin"></i>正在为您查询麻阳北项目视频列表</div>
+                  <div><i class="fa fa-check-circle"></i>已定位：麻阳北一标 / 工地实验室 / 2号摄像头</div>
+                  <div><i class="fa fa-random"></i>正在调用 AI现场智能体的视频调度能力</div>
+                </div>
+                <div class="digital-video-result">
+                  <div class="digital-video-head">
+                    <span><i class="fa fa-video-camera"></i> 麻阳北一标实验室实时视频</span>
+                    <span>在线 · 14:30:20</span>
+                  </div>
+                  <div class="digital-video-frame">
+                    <div class="video-caption">2号摄像头｜试验检测区</div>
+                    <div class="lab-box"><span>实验室画面已调取</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="digital-input">
+                <button><i class="fa fa-microphone"></i></button>
+                <input value="查看麻阳北一标实验室视频" aria-label="数字人指令输入">
+                <button class="send-command">发送</button>
+              </div>
+            </div>
           </div>`;
       } else {
         mainContent.innerHTML = `
@@ -1088,19 +1710,7 @@
           </div>`;
       }
 
-      rightPanel.innerHTML = `
-        <div class="right-card">
-          <div class="section-title"><i class="fa fa-dashboard"></i> 能力指标</div>
-          <div class="kpi-grid">${data.kpis.map(kpi => `<div class="kpi"><div class="num">${kpi[0]}</div><div class="name">${kpi[1]}</div></div>`).join('')}</div>
-        </div>
-        <div class="right-card">
-          <div class="section-title"><i class="fa fa-bolt"></i> 运行动态</div>
-          <div class="timeline">${data.timeline.map((item, i) => `<div class="timeline-item"><span class="timeline-time">${['14:35','14:12','13:50','11:30'][i] || '10:20'}</span><span>${item}</span></div>`).join('')}</div>
-        </div>
-        <div class="right-card">
-          <div class="section-title"><i class="fa fa-flag-checkered"></i> 近期成果</div>
-          ${data.results.map(item => `<div class="result-card">${item}</div>`).join('')}
-        </div>`;
+      renderRightPanel(data);
       updateAssistantCommands();
     }
 
@@ -1162,6 +1772,53 @@
       if (e.target.classList.contains('quick-command')) sendMessage(e.target.textContent);
     });
     mainContent.addEventListener('click', (e) => {
+      const closureStep = e.target.closest('[data-closure-step]');
+      if (closureStep) {
+        selectedClosureStep = closureStep.dataset.closureStep;
+        selectedNodeDetail = '';
+        renderSubPage('field');
+        return;
+      }
+      const closureAction = e.target.closest('[data-closure-action]');
+      if (closureAction) {
+        const action = closureAction.dataset.closureAction;
+        if (action === 'warn') {
+          closureStatus = 2;
+          selectedClosureStep = '预警';
+          selectedNodeDetail = '预警工单YH-20260509-001';
+        } else if (action === 'dispatch') {
+          closureStatus = 3;
+          selectedClosureStep = '处置';
+          selectedNodeDetail = '整改任务已派发';
+        } else if (action === 'close') {
+          closureStatus = 4;
+          selectedClosureStep = '闭环';
+          selectedNodeDetail = '复核通过';
+        } else if (action === 'screenshot') {
+          selectedClosureStep = '感知';
+          selectedNodeDetail = '现场抓拍图片';
+        } else if (action === 'archive') {
+          selectedClosureStep = '闭环';
+          selectedNodeDetail = '案例归档';
+        } else if (action === 'source') {
+          selectedClosureStep = '感知';
+          selectedNodeDetail = '3号摄像头实时画面';
+        } else if (action === 'rule') {
+          selectedClosureStep = '识别';
+          selectedNodeDetail = '作业人员未带安全帽';
+        } else if (action === 'order') {
+          selectedClosureStep = '预警';
+          selectedNodeDetail = '预警工单YH-20260509-001';
+        } else if (action === 'advice') {
+          selectedClosureStep = '处置';
+          selectedNodeDetail = '处置建议';
+        } else if (action === 'report') {
+          selectedClosureStep = '闭环';
+          selectedNodeDetail = '闭环报告';
+        }
+        renderSubPage('field');
+        return;
+      }
       const gridBtn = e.target.closest('[data-video-grid]');
       if (gridBtn) {
         videoGridMode = Number(gridBtn.dataset.videoGrid);
@@ -1179,6 +1836,20 @@
       if (!modeBtn) return;
       fieldDemoMode = modeBtn.dataset.fieldMode;
       renderSubPage('field');
+    });
+    rightPanel.addEventListener('click', (e) => {
+      const stepBtn = e.target.closest('.process-tab[data-right-step]');
+      if (stepBtn) {
+        selectedRightStep = stepBtn.dataset.rightStep;
+        selectedRightDetail = '';
+        renderRightPanel(pages.field);
+        return;
+      }
+      const detailItem = e.target.closest('[data-right-detail]');
+      if (!detailItem) return;
+      selectedRightStep = detailItem.dataset.rightStep || selectedRightStep;
+      selectedRightDetail = detailItem.dataset.rightDetail;
+      renderRightPanel(pages.field);
     });
     updateAssistantCommands();
   </script>
